@@ -12,8 +12,8 @@ environment:
 windows:
 - window_name: camera
   layout: tiled
-  # shell_command_before:
-  # - source ${WORKSPACE}/devel/setup.bash
+  shell_command_before:
+  - export RMW_IMPLEMENTATION=rmw_zenoh_cpp
   panes:
   - ros2 run rmw_zenoh_cpp rmw_zenohd
   - ros2 launch realsense2_camera rs_launch.py camera_namespace:=$KIMERA_VIO_CAMERA 
@@ -31,7 +31,8 @@ windows:
 - window_name: ros1_ros2_bridge
   layout: tiled
   shell_command_before:
-  - source ${KIMERA_VIO_ROS2_REALSENSE_DIR}/ros-${ROS_DISTRO}-ros1-bridge/install/local_setup.zsh
+  - export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+  - source ${KIMERA_VIO_ROS2_REALSENSE_DIR}/dependencies/ros-${ROS_DISTRO}-ros1-bridge/install/local_setup.zsh
   panes:
   - ros2 run ros1_bridge dynamic_bridge
   # - ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
