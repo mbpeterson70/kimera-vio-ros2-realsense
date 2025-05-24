@@ -1,0 +1,19 @@
+session_name: kimera_vio_ros1_docker
+
+environment:
+  ROS_MASTER_URI: ${ROS_MASTER_URI}
+  ROS_IP: ${ROS_IP}
+  CAMERA: ${CAMERA}
+
+options:
+  default-command: /bin/bash
+
+windows:
+- window_name: "kimera_vio_ros1_docker"
+  layout: tiled
+  shell_command_before:
+  - source ${WORKSPACE}/devel/setup.bash
+  panes:
+  - roscore
+  - roslaunch kimera_vio_ros1_docker $CAMERA.launch 
+    params_folder:=${WORKSPACE}/src/kimera-vio-ros1-docker/params/$CAMERA --wait

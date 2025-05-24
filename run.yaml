@@ -1,0 +1,37 @@
+session_name: kimera_vio_ros2_realsense
+
+environment:
+  ROS_MASTER_URI: ${ROS_MASTER_URI}
+  ROS_IP: ${ROS_IP}
+  KIMERA_VIO_CAMERA: ${KIMERA_VIO_CAMERA}
+  KIMERA_VIO_ROS2_REALSENSE_DIR: ${KIMERA_VIO_ROS2_REALSENSE_DIR}
+
+# options:
+#   default-command: /bin/zsh
+
+windows:
+- window_name: camera
+  layout: tiled
+  # shell_command_before:
+  # - source ${WORKSPACE}/devel/setup.bash
+  panes:
+  - ros2 run rmw_zenoh_cpp rmw_zenohd
+  - ros2 launch realsense2_camera rs_launch.py camera_namespace:=$KIMERA_VIO_CAMERA 
+    camera_name:=$KIMERA_VIO_CAMERA unite_imu_method:=2 enable_accel:=true enable_gyro:=true
+    enable_infra1:=true enable_infra2:=true
+
+- window_name: kimera_vio_ros1_docker
+  layout: tiled
+  shell_command_before:
+  - ROS_VARS="-e ROS_MASTER_URI=$ROS_MASTER_URI -e ROS_IP=$ -e ROS_DOMAIN_ID=$ROS_DOMAIN_ID"
+  - KIMERA_VARS="-e CAMERA=$KIMERA_VIO_CAMERA"
+  panes: 
+  - $KIMERA_VIO_ROS2_REALSENSE_DIR/docker/enter.sh
+
+- window_name: ros1_ros2_bridge
+  layout: tiled
+  shell_command_before:
+  - source ${KIMERA_VIO_ROS2_REALSENSE_DIR}/ros-${ROS_DISTRO}-ros1-bridge/install/local_setup.zsh
+  panes:
+  - ros2 run ros1_bridge dynamic_bridge
+  # - ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
