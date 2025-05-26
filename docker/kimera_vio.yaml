@@ -4,6 +4,7 @@ environment:
   ROS_MASTER_URI: ${ROS_MASTER_URI}
   ROS_IP: ${ROS_IP}
   CAMERA: ${CAMERA}
+  ROBOT_NAME: ${ROBOT_NAME}
 
 options:
   default-command: /bin/bash
@@ -15,5 +16,5 @@ windows:
   - source ${WORKSPACE}/devel/setup.bash
   panes:
   - roscore
-  - roslaunch kimera_vio_ros1_docker $CAMERA.launch 
+  - roslaunch kimera_vio_ros1_docker $CAMERA.launch robot_name:=$ROBOT_NAME
     params_folder:=${WORKSPACE}/src/kimera-vio-ros1-docker/params/$CAMERA --wait

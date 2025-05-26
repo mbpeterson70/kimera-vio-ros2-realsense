@@ -23,8 +23,7 @@ windows:
 - window_name: kimera_vio_ros1_docker
   layout: tiled
   shell_command_before:
-  - ROS_VARS="-e ROS_MASTER_URI=$ROS_MASTER_URI -e ROS_IP=$ -e ROS_DOMAIN_ID=$ROS_DOMAIN_ID"
-  - KIMERA_VARS="-e CAMERA=$KIMERA_VIO_CAMERA"
+  - export ROBOT_NAME=$KIMERA_VIO_CAMERA
   panes: 
   - $KIMERA_VIO_ROS2_REALSENSE_DIR/docker/enter.sh
 
