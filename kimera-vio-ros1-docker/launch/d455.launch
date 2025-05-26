@@ -9,7 +9,7 @@
   <!-- BoW vector publishing for Kimera-Multi -->
   <arg name="bow_batch_size"          default="10" />
   <arg name="bow_skip_num"            default="2" />
-  <arg name="publish_vlc_frames"      default="true"/>
+  <arg name="publish_vlc_frames"      default="false"/>
 
   <arg name="do_coarse_temporal_sync" default="false"/>
   <arg name="do_fine_temporal_sync"   default="false"/>
@@ -43,20 +43,17 @@
 
   <!-- frame information -->
   <arg name="map_frame_id"      value="$(arg robot_name)/map"/>
-  <arg name="base_link_frame_id"  value="$(arg robot_name)/realsense_base"/>
+  <arg name="base_link_frame_id"  value="$(arg robot_name)/base_link"/>
   <arg name="odom_frame_id"        value="$(arg robot_name)/odom"/>
-  <arg name="left_cam_frame_id"   value="$(arg robot_name)/d455_infra1_optical_frame"/>
-  <arg name="right_cam_frame_id"  value="$(arg robot_name)/d455_infra2_optical_frame"/>
+  <arg name="left_cam_frame_id"   value="d455_infra1_optical_frame"/>
+  <arg name="right_cam_frame_id"  value="d455_infra2_optical_frame"/>
 
   <!-- Launch actual pipeline -->
   <group ns="$(arg robot_name)" >
     <include file="$(find kimera_vio_ros)/launch/kimera_vio_ros.launch"  pass_all_args="true"/>
 
     <!-- static transform for realsense to base frame -->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_realsense" args="0 0 -0.2 0 0 0 $(arg robot_name)/realsense_base $(arg robot_name)/base" />
-    <!-- for arl jackals -->
-    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_realsense" args="0 0.5 -0.2 1.59 -1.59 0 $(arg robot_name)/realsense_base $(arg robot_name)/base" /> -->
-
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_realsense" args="-0.030, 0.007, 0.016 0.500, -0.500, 0.500, 0.500  $(arg robot_name)/base_link d455_link" />
 
   </group>  <!-- ns="$(arg robot_name)" -->
 
