@@ -19,6 +19,9 @@ windows:
   - ros2 launch realsense2_camera rs_launch.py camera_namespace:=$KIMERA_VIO_CAMERA 
     camera_name:=$KIMERA_VIO_CAMERA unite_imu_method:=2 enable_accel:=true enable_gyro:=true
     enable_infra1:=true enable_infra2:=true
+  - sleep 5 && ros2 param set /$KIMERA_VIO_CAMERA/$KIMERA_VIO_CAMERA depth_module.emitter_enabled 0
+  - echo "PRESS ENTER TO KILL" &&
+    docker stop $(docker ps -q --filter ancestor=kimera-vio-docker ) && tmux kill-session \
 
 - window_name: kimera_vio_ros1_docker
   layout: tiled
