@@ -2,8 +2,6 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 if [ ! -d "$SCRIPT_DIR/dependencies" ]; then
-    # install zenoh
-    sudo apt update && sudo apt install ros-jazzy-rmw-zenoh-cpp
     
     mkdir $SCRIPT_DIR/dependencies && pushd $SCRIPT_DIR/dependencies 
 

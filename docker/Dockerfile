@@ -1,25 +1,55 @@
 # Adapted from https://github.com/fishberg/kimera-vio-docker
 
-FROM ros:foxy-ros1-bridge
+FROM ubuntu:20.04
+
+# Avoid interactive tzdata configuration
+ENV DEBIAN_FRONTEND=noninteractive
 
 # timedatectl list-timezones
 ENV TZ=America/New_York
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+# Essentials
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -q -y --no-install-recommends apt-utils
 RUN apt-get install -q -y --no-install-recommends net-tools iproute2 iputils-ping
-RUN apt-get install -q -y --no-install-recommends git tmux vim neovim tmuxp
+RUN apt-get install -q -y --no-install-recommends git tmux vim neovim tmuxp curl
+
+RUN apt update && apt install -y \
+    lsb-release \
+    curl \
+    gnupg2 \
+    lsb-release \
+    sudo \
+    build-essential \
+    python3-pip \
+    git \
+    vim \
+    tmux \
+    tmuxp \
+    libtbb-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up ROS repository
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+
+# Install ROS Noetic
+RUN apt update && apt install -y \
+    ros-noetic-desktop-full
+#     && rm -rf /var/lib/apt/lists/*
+
 # needed for system dependencies
 RUN apt-get install -q -y --no-install-recommends \
-      cmake build-essential unzip pkg-config autoconf \
-      libboost-all-dev \
-      libjpeg-dev libpng-dev libtiff-dev \
-      libvtk6-dev libgtk-3-dev \
-      libatlas-base-dev gfortran \
-      libparmetis-dev \
-      python3-wstool python3-catkin-tools
+      cmake build-essential unzip pkg-config autoconf
+RUN apt-get install -q -y --no-install-recommends libboost-all-dev 
+RUN apt-get install -q -y --no-install-recommends libjpeg-dev libpng-dev libtiff-dev 
+RUN apt-get install -q -y --no-install-recommends libvtk6-dev libgtk-3-dev 
+RUN apt-get install -q -y --no-install-recommends libatlas-base-dev gfortran 
+RUN apt-get install -q -y --no-install-recommends libparmetis-dev 
+RUN apt-get install -q -y --no-install-recommends python3-wstool python3-catkin-tools
+
 # needed for misc ros pacakges; can be simplified for lighter container
 RUN apt-get install -q -y --no-install-recommends ros-noetic-desktop-full
 # needed for mesh_rviz_plugins
@@ -57,30 +87,14 @@ WORKDIR $WORKSPACE/src/Kimera-VIO
 WORKDIR $WORKSPACE/src/gtsam
 RUN git checkout c4184e192b4605303cc0b0d51129e470eb4b4ed1
 
-# fix mesh_rviz_plugins
-#COPY "./copy/mesh_rviz_plugins.patch" /root
-#WORKDIR $WORKSPACE/src/mesh_rviz_plugins
-#RUN patch < /root/mesh_rviz_plugins.patch
-
-# DEBUG
-#WORKDIR ${WORKSPACE}/src
-#RUN rm -rf $(ls | grep -v image_undistort)
-
-# MOVE UP; needed for image_undistort
-#RUN apt-get install -q -y --no-install-recommends libnlopt-dev 
-
 # catkin build
 SHELL ["/bin/bash", "-c"]
 WORKDIR ${WORKSPACE}
-#RUN source $ROS_DIR/setup.bash
-#ENV CMAKE_PREFIX_PATH=/opt/ros/noetic
-#RUN catkin env
-# https://stackoverflow.com/questions/55206227/why-bashrc-is-not-executed-when-run-docker-container
-RUN source $ROS_DIR/setup.bash && catkin build -j 16
+# build with half the available threads otherwise memory runs out
+RUN source $ROS_DIR/setup.bash && catkin build -j $(( $(nproc) / 2 ))
 
 COPY "./kimera-vio-ros1-docker" "${WORKSPACE}/src/kimera-vio-ros1-docker"
 RUN source $ROS_DIR/setup.bash && catkin build kimera_vio_ros1_docker
-
 
 COPY "./docker/entrypoint.bash" /
 COPY "./docker/kimera_vio.yaml" /
