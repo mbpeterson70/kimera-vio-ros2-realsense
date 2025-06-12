@@ -31,7 +31,7 @@ sudo apt install tmux tmuxp ros-${ROS_DISTRO}-rmw-zenoh-cpp
 First source ROS2:
 
 ```
-source /opr/ros/<ros distro>
+source /opt/ros/<ros distro>
 ```
 
 Then build the ROS1/2 bridge and Docker image:
@@ -39,7 +39,7 @@ Then build the ROS1/2 bridge and Docker image:
 ```
 git clone https://github.com/mbpeterson70/kimera-vio-ros2-realsense.git
 cd kimera-vio-ros2-realsense
-./build.sh
+./build.bash
 ```
 
 ## Run
